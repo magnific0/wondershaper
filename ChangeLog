@@ -1,0 +1,13 @@
+Changes since version 1.2 (forked by magnic0):
+	- added command-line interface (through options and flags) 
+	  that didn't seem to be working before as the options were 
+	  hardcoded in the script.
+
+Changes since version 1.1:
+	- Georg Wild <georg.wild@gmx.de> noticed that
+	  NOPRIOHOSTDST was never used
+
+Changes since version 1.0:
+
+	- we now prioritize ALL small packets, not just acks
+	- ability to deprioritize certain source/dst host/ports
