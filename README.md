@@ -21,7 +21,7 @@ Installation
 2. If you haven't already done so, change the owner to root and change the permission, like so
 
 	chown root:root /usr/bin/wondershaper 
-
+	
 	chmod 744 /usr/bin/wondershaper
 
 3. You are now ready to use Wonder Shaper
@@ -47,15 +47,14 @@ The following command line options are allowed:
 
 The different modes are:
 
-   wondershaper -a <adapter> -d <rate> -u <rate>
+	wondershaper -a <adapter> -d <rate> -u <rate>
 
-   wondershaper -c -a <adapter>
+	wondershaper -c -a <adapter>
 
-   wondershaper -s -a <adapter>
+	wondershaper -s -a <adapter>
 
 Some examples:
 
-   wondershaper -a eth0 -d 1024 -u 512
+	wondershaper -a eth0 -d 1024 -u 512
 
-   wondershaper -c -a eth0
-
+	wondershaper -c -a eth0
