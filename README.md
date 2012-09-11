@@ -20,9 +20,9 @@ Installation
 
 2. If you haven't already done so, change the owner to root and change the permission, like so
 
-	chown root:root /usr/bin/wondershaper 
+		chown root:root /usr/bin/wondershaper 
 	
-	chmod 744 /usr/bin/wondershaper
+		chmod 744 /usr/bin/wondershaper
 
 3. You are now ready to use Wonder Shaper
 
