@@ -16,15 +16,11 @@ Wonder Shaper is a script that allow the user to limit the bandwidth of one or m
 Installation
 --------------
 
-1. Copy the file into your /usr/bin/ folder.
+You can run wondershaper (as any user with sufficient permissions) without
+installation. However if you want to install the script onto your system you can
+simply run:
 
-2. If you haven't already done so, change the owner to root and change the permission, like so
-
-		chown root:root /usr/bin/wondershaper 
-	
-		chmod 744 /usr/bin/wondershaper
-
-3. You are now ready to use Wonder Shaper
+        sudo make install
 
 Usage
 --------------
