@@ -37,6 +37,8 @@ The following command line options are allowed:
 
 - `-u <rate>` Set maximum upload rate (in Kbps)
 
+- `-p` Use the presets in /etc/conf.d/wondershaper.conf
+
 - `-c` Clear the limits from adapter
 
 - `-s` Show the current status of adapter
