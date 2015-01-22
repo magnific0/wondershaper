@@ -114,7 +114,7 @@ NOPRIOPORTDST=
 
 # install root CBQ
 
-tc qdisc add dev $IFACE root handle 1: cbq avpkt 1000 bandwidth 10mbit 
+tc qdisc add dev $IFACE root handle 1: cbq avpkt 1000 bandwidth 1000mbit 
 
 # shape everything at $USPEED speed - this prevents huge queues in your
 # DSL modem which destroy latency:
