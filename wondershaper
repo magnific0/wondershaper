@@ -112,32 +112,37 @@ NOPRIOPORTDST=
 
 ###### uplink
 
-# install root CBQ
+# install root HTB
 
-tc qdisc add dev $IFACE root handle 1: cbq avpkt 1000 bandwidth 10mbit 
+tc qdisc add dev $IFACE root handle 1: htb \
+    default 20
 
 # shape everything at $USPEED speed - this prevents huge queues in your
 # DSL modem which destroy latency:
 # main class
 
-tc class add dev $IFACE parent 1: classid 1:1 cbq rate ${USPEED}kbit \
-allot 1500 prio 5 bounded isolated 
+tc class add dev $IFACE parent 1: classid 1:1 htb \
+    rate ${USPEED}kbit \
+    prio 5
 
 # high prio class 1:10:
 
-tc class add dev $IFACE parent 1:1 classid 1:10 cbq rate ${USPEED}kbit \
-   allot 1600 prio 1 avpkt 1000
+tc class add dev $IFACE parent 1:1 classid 1:10 htb \
+    rate ${USPEED}kbit \
+    prio 1
 
 # bulk and default class 1:20 - gets slightly less traffic, 
 #  and a lower priority:
 
-tc class add dev $IFACE parent 1:1 classid 1:20 cbq rate $[9*$USPEED/10]kbit \
-   allot 1600 prio 2 avpkt 1000
+tc class add dev $IFACE parent 1:1 classid 1:20 htb \
+    rate $[9*$USPEED/20]kbit ceil $[9*$USPEED/10]kbit \
+    prio 2
 
 # 'traffic we hate'
 
-tc class add dev $IFACE parent 1:1 classid 1:30 cbq rate $[8*$USPEED/10]kbit \
-   allot 1600 prio 2 avpkt 1000
+tc class add dev $IFACE parent 1:1 classid 1:30 htb \
+    rate $[8*$USPEED/20]kbit ceil $[8*$USPEED/10]kbit \
+    prio 2
 
 # all get Stochastic Fairness:
 tc qdisc add dev $IFACE parent 1:10 handle 10: sfq perturb 10
@@ -207,5 +212,5 @@ tc qdisc add dev $IFACE handle ffff: ingress
 # coming in too fast:
 
 tc filter add dev $IFACE parent ffff: protocol ip prio 50 u32 match ip src \
-   0.0.0.0/0 police rate ${DSPEED}kbit burst 10k drop flowid :1
+   0.0.0.0/0 police rate ${DSPEED}kbit burst 30k drop flowid :1
 
