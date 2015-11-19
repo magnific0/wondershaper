@@ -1,3 +1,10 @@
+Changes since version 1.3 (forked by Saimonn/Camptocamp):
+	- move from CBQ to HTB queing.
+	  CBQ didn't cope well on a ~100Mbps link : individual downloads
+		were ceiling at 3Mbit/s. Moving to HTB allows to really use all the
+		available bandwith, event with a single TCP connection, and without
+		any caveats on SIP telephony or link reactivity.
+
 Changes since version 1.2 (forked by magnic0):
 	- added command-line interface (through options and flags) 
 	  that didn't seem to be working before as the options were 
