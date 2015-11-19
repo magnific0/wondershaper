@@ -1,9 +1,9 @@
-#!/bin/bash 
+#!/bin/bash
 # Wonder Shaper
 #
 # Set the following values to somewhat less than your actual download
 # and uplink speed. In kilobits. Also set the device that is to be shaped.
-# 
+#
 # Orginal: bert hubert <ahu@ds9a.nl>, Copyright 2002, Licensed under the GPL
 # Fixes: magnific0 (http://www.github.com/magnific0/wondershaper)
 #        systemd .service and .conf file by kfgz and cmsigler at aur.archlinux.org
@@ -59,9 +59,9 @@ done
 if [ "$MODE" = "presets" ]
 then
     if [ -f /etc/conf.d/wondershaper.conf ]
-    then 
-	source /etc/conf.d/wondershaper.conf 
-    else 
+    then
+	source /etc/conf.d/wondershaper.conf
+    else
 	echo "/etc/conf.d/wondershaper.conf not found"
 	exit 1
     fi
@@ -131,7 +131,7 @@ tc class add dev $IFACE parent 1:1 classid 1:10 htb \
     rate ${USPEED}kbit \
     prio 1
 
-# bulk and default class 1:20 - gets slightly less traffic, 
+# bulk and default class 1:20 - gets slightly less traffic,
 #  and a lower priority:
 
 tc class add dev $IFACE parent 1:1 classid 1:20 htb \
@@ -154,7 +154,7 @@ tc qdisc add dev $IFACE parent 1:30 handle 30: sfq perturb 10
 tc filter add dev $IFACE parent 1:0 protocol ip prio 10 u32 \
       match ip tos 0x10 0xff  flowid 1:10
 
-# ICMP (ip protocol 1) in the interactive class 1:10 so we 
+# ICMP (ip protocol 1) in the interactive class 1:10 so we
 # can do measurements & impress our friends:
 tc filter add dev $IFACE parent 1:0 protocol ip prio 11 u32 \
         match ip protocol 1 0xff flowid 1:10
@@ -200,7 +200,7 @@ tc filter add dev $IFACE parent 1: protocol ip prio 18 u32 \
 
 
 ########## downlink #############
-# slow downloads down to somewhat less than the real speed  to prevent 
+# slow downloads down to somewhat less than the real speed  to prevent
 # queuing at our ISP. Tune to see how high you can set it.
 # ISPs tend to have *huge* queues to make sure big downloads are fast
 #
