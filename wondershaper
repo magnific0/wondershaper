@@ -203,19 +203,3 @@ done
 tc filter add dev $IFACE parent 1: protocol ip prio 18 u32 \
    match ip dst 0.0.0.0/0 flowid 1:20
 
-
-########## downlink #############
-# slow downloads down to somewhat less than the real speed  to prevent
-# queuing at our ISP. Tune to see how high you can set it.
-# ISPs tend to have *huge* queues to make sure big downloads are fast
-#
-# attach ingress policer:
-
-tc qdisc add dev $IFACE handle ffff: ingress
-
-# filter *everything* to it (0.0.0.0/0), drop everything that's
-# coming in too fast:
-
-tc filter add dev $IFACE parent ffff: protocol ip prio 50 u32 match ip src \
-   0.0.0.0/0 police rate ${DSPEED}kbit burst 30k drop flowid :1
-
