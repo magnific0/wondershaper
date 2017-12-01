@@ -1,12 +1,12 @@
-The Wonder Shaper 1.3
+The Wonder Shaper 1.4
 ==============
 
 Copyright
 -------------
 
 bert hubert <ahu@ds9a.nl> http://lartc.org/wondershaper (c) Copyright 2002
-magnific0 http://www.github.com/magnific0 (c) Copyright 2012
 Simon Séhier <simon@sehier.fr> - Camptocamp (c) Copyright 2015 - HTB
+magnific0 http://www.github.com/magnific0 (c) Copyright 2012-2017
 Licenced under the GPL
 
 About
@@ -34,7 +34,7 @@ The following command line options are allowed:
 
 - `-a <adapter>` Set the adpter
 
-- `-d <rate>` Set maximum download rate (in Kbps)
+- `-d <rate>` Set maximum download rate (in Kbps) and/or
 
 - `-u <rate>` Set maximum upload rate (in Kbps)
 
@@ -57,5 +57,7 @@ Some examples:
 	wondershaper -a eth0 -d 1024 -u 512
 
 	wondershaper -a eth1 -d 94000 -u 94000  # could be used on a 100Mbps link
+
+	wondershaper -a eth1 -u 94000  # only limit upload
 
 	wondershaper -c -a eth0

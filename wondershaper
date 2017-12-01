@@ -23,7 +23,7 @@ Limit the bandwidth of an adapter
 OPTIONS:
    -h           Show this message
    -a <adapter> Set the adpter
-   -d <rate>    Set maximum download rate (in Kbps)
+   -d <rate>    Set maximum download rate (in Kbps) and/or
    -u <rate>    Set maximum upload rate (in Kbps)
    -p           Use presets in /etc/conf.d/wondershaper.conf
    -c           Clear the limits from adapter
@@ -36,6 +36,7 @@ MODES:
 
 EXAMPLES:
    wondershaper -a eth0 -d 1024 -u 512
+   wondershaper -a eth0 -u 512
    wondershaper -c -a eth0
 
 EOF
@@ -44,6 +45,7 @@ EOF
 DSPEED=
 USPEED=
 IFACE=
+IFB="ifb0"
 MODE=
 
 while getopts hd:u:a:pcs o
@@ -91,10 +93,12 @@ if [ "$MODE" = "clear" ]
 then
     tc qdisc del dev $IFACE root    2> /dev/null > /dev/null
     tc qdisc del dev $IFACE ingress 2> /dev/null > /dev/null
+    tc qdisc del dev $IFB   root    2> /dev/null > /dev/null
+    tc qdisc del dev $IFB   ingress 2> /dev/null > /dev/null
     exit
 fi
 
-if [[ -z $DSPEED ]] || [[ -z $USPEED ]] || [[ -z $IFACE ]]
+if ( [[ -z $DSPEED ]] && [[ -z $USPEED ]] ) || [[ -z $IFACE ]]
 then
     usage
     exit 1
@@ -113,8 +117,6 @@ NOPRIOPORTSRC=
 # low priority destination ports
 NOPRIOPORTDST=
 
-
-
 ###### uplink
 
 # install root HTB
@@ -125,81 +127,110 @@ tc qdisc add dev $IFACE root handle 1: htb \
 # shape everything at $USPEED speed - this prevents huge queues in your
 # DSL modem which destroy latency:
 # main class
+if [[ ! -z $USPEED ]]
+then
 
-tc class add dev $IFACE parent 1: classid 1:1 htb \
-    rate ${USPEED}kbit \
-    prio 5 $COMMONOPTIONS
+    tc class add dev $IFACE parent 1: classid 1:1 htb \
+        rate ${USPEED}kbit \
+        prio 5 $COMMONOPTIONS
 
-# high prio class 1:10:
+    # high prio class 1:10:
 
-tc class add dev $IFACE parent 1:1 classid 1:10 htb \
-    rate $[40*$USPEED/100]kbit ceil $[95*$USPEED/100]kbit \
-    prio 1 $COMMONOPTIONS
+    tc class add dev $IFACE parent 1:1 classid 1:10 htb \
+        rate $[40*$USPEED/100]kbit ceil $[95*$USPEED/100]kbit \
+        prio 1 $COMMONOPTIONS
 
-# bulk and default class 1:20 - gets slightly less traffic,
-#  and a lower priority:
+    # bulk and default class 1:20 - gets slightly less traffic,
+    #  and a lower priority:
 
-tc class add dev $IFACE parent 1:1 classid 1:20 htb \
-    rate $[40*$USPEED/100]kbit ceil $[95*$USPEED/100]kbit \
-    prio 2 $COMMONOPTIONS
+    tc class add dev $IFACE parent 1:1 classid 1:20 htb \
+        rate $[40*$USPEED/100]kbit ceil $[95*$USPEED/100]kbit \
+        prio 2 $COMMONOPTIONS
 
-# 'traffic we hate'
+    # 'traffic we hate'
 
-tc class add dev $IFACE parent 1:1 classid 1:30 htb \
-    rate $[20*$USPEED/100]kbit ceil $[90*$USPEED/100]kbit \
-    prio 3 $COMMONOPTIONS
+    tc class add dev $IFACE parent 1:1 classid 1:30 htb \
+        rate $[20*$USPEED/100]kbit ceil $[90*$USPEED/100]kbit \
+        prio 3 $COMMONOPTIONS
 
-# all get Stochastic Fairness:
-tc qdisc add dev $IFACE parent 1:10 handle 10: sfq perturb 10 quantum $QUANTUM
-tc qdisc add dev $IFACE parent 1:20 handle 20: sfq perturb 10 quantum $QUANTUM
-tc qdisc add dev $IFACE parent 1:30 handle 30: sfq perturb 10 quantum $QUANTUM
+    # all get Stochastic Fairness:
+    tc qdisc add dev $IFACE parent 1:10 handle 10: sfq perturb 10 quantum $QUANTUM
+    tc qdisc add dev $IFACE parent 1:20 handle 20: sfq perturb 10 quantum $QUANTUM
+    tc qdisc add dev $IFACE parent 1:30 handle 30: sfq perturb 10 quantum $QUANTUM
 
-# start filters
-# TOS Minimum Delay (ssh, NOT scp) in 1:10:
-tc filter add dev $IFACE parent 1: protocol ip prio 10 u32 \
-      match ip tos 0x10 0xff  flowid 1:10
+    # start filters
+    # TOS Minimum Delay (ssh, NOT scp) in 1:10:
+    tc filter add dev $IFACE parent 1: protocol ip prio 10 u32 \
+        match ip tos 0x10 0xff  flowid 1:10
 
-# ICMP (ip protocol 1) in the interactive class 1:10 so we
-# can do measurements & impress our friends:
-tc filter add dev $IFACE parent 1: protocol ip prio 11 u32 \
+    # ICMP (ip protocol 1) in the interactive class 1:10 so we
+    # can do measurements & impress our friends:
+    tc filter add dev $IFACE parent 1: protocol ip prio 11 u32 \
         match ip protocol 1 0xff flowid 1:10
 
-# prioritize small packets (<64 bytes)
+    # prioritize small packets (<64 bytes)
 
-tc filter add dev $IFACE parent 1: protocol ip prio 12 u32 \
-   match ip protocol 6 0xff \
-   match u8 0x05 0x0f at 0 \
-   match u16 0x0000 0xffc0 at 2 \
-   flowid 1:10
+    tc filter add dev $IFACE parent 1: protocol ip prio 12 u32 \
+        match ip protocol 6 0xff \
+        match u8 0x05 0x0f at 0 \
+        match u16 0x0000 0xffc0 at 2 \
+        flowid 1:10
 
 
-# some traffic however suffers a worse fate
-for a in $NOPRIOPORTDST
-do
-	tc filter add dev $IFACE parent 1: protocol ip prio 14 u32 \
-	   match ip dport $a 0xffff flowid 1:30
-done
+    # some traffic however suffers a worse fate
+    for a in $NOPRIOPORTDST
+    do
+        tc filter add dev $IFACE parent 1: protocol ip prio 14 u32 \
+            match ip dport $a 0xffff flowid 1:30
+    done
 
-for a in $NOPRIOPORTSRC
-do
- 	tc filter add dev $IFACE parent 1: protocol ip prio 15 u32 \
-	   match ip sport $a 0xffff flowid 1:30
-done
+    for a in $NOPRIOPORTSRC
+    do
+        tc filter add dev $IFACE parent 1: protocol ip prio 15 u32 \
+            match ip sport $a 0xffff flowid 1:30
+    done
 
-for a in $NOPRIOHOSTSRC
-do
- 	tc filter add dev $IFACE parent 1: protocol ip prio 16 u32 \
-	   match ip src $a flowid 1:30
-done
+    for a in $NOPRIOHOSTSRC
+    do
+        tc filter add dev $IFACE parent 1: protocol ip prio 16 u32 \
+            match ip src $a flowid 1:30
+    done
 
-for a in $NOPRIOHOSTDST
-do
- 	tc filter add dev $IFACE parent 1: protocol ip prio 17 u32 \
-	   match ip dst $a flowid 1:30
-done
+    for a in $NOPRIOHOSTDST
+    do
+        tc filter add dev $IFACE parent 1: protocol ip prio 17 u32 \
+            match ip dst $a flowid 1:30
+    done
 
-# rest is 'non-interactive' ie 'bulk' and ends up in 1:20
+    # rest is 'non-interactive' ie 'bulk' and ends up in 1:20
 
-tc filter add dev $IFACE parent 1: protocol ip prio 18 u32 \
-   match ip dst 0.0.0.0/0 flowid 1:20
+    tc filter add dev $IFACE parent 1: protocol ip prio 18 u32 \
+        match ip dst 0.0.0.0/0 flowid 1:20
+    
+fi
 
+########## downlink #############
+# slow downloads down to somewhat less than the real speed  to prevent
+# queuing at our ISP. Tune to see how high you can set it.
+# ISPs tend to have *huge* queues to make sure big downloads are fast
+#
+# attach ingress policer:
+if [[ ! -z $DSPEED ]]
+then
+
+    # Add the IFB interface
+    modprobe ifb numifbs=1
+    ip link set dev $IFB up
+
+    # Redirect ingress (incoming) to egress ifb0
+    tc qdisc add dev $IFACE handle ffff: ingress
+    tc filter add dev $IFACE parent ffff: protocol ip u32 match u32 0 0 action mirred egress redirect dev $IFB
+    
+    # Add class and rules for virtual
+    tc qdisc add dev $IFB root handle 2: htb
+    tc class add dev $IFB parent 2: classid 2:1 htb rate ${DSPEED}kbit
+    
+    # Add filter to rule for IP address
+    tc filter add dev $IFB protocol ip parent 2: prio 1 u32 match ip src 0.0.0.0/0 flowid 2:1
+    
+fi
