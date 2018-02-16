@@ -4,10 +4,9 @@ The Wonder Shaper 1.4
 Copyright
 -------------
 
-bert hubert <ahu@ds9a.nl> http://lartc.org/wondershaper (c) Copyright 2002
-Simon Séhier <simon@sehier.fr> - Camptocamp (c) Copyright 2015 - HTB
-magnific0 http://www.github.com/magnific0 (c) Copyright 2012-2017
-Licenced under the GPL
+Copyright (c) 2002-2017 Bert Hubert <ahu@ds9a.nl>, Jacco Geul <jacco@geul.net>, Simon Séhier <simon@sehier.fr>
+
+See the ChangeLog for information on the individual contributions of the authors.
 
 About
 --------------
@@ -78,7 +77,7 @@ This way wondershaper is activated with your setting upon reboot.
 Usage
 --------------
 
-	wondershaper [-hcs] [-a <adapter>] [-d <rate>] [-u <rate>]
+        wondershaper [-hcs] [-a <adapter>] [-d <rate>] [-u <rate>]
 
 The following command line options are allowed:
 
@@ -98,18 +97,18 @@ The following command line options are allowed:
 
 The different modes are:
 
-	wondershaper -a <adapter> -d <rate> -u <rate>
+        wondershaper -a <adapter> -d <rate> -u <rate>
 
-	wondershaper -c -a <adapter>
+        wondershaper -c -a <adapter>
 
-	wondershaper -s -a <adapter>
+        wondershaper -s -a <adapter>
 
 Some examples:
 
-	wondershaper -a eth0 -d 1024 -u 512
+        wondershaper -a eth0 -d 1024 -u 512
 
-	wondershaper -a eth1 -d 94000 -u 94000  # could be used on a 100Mbps link
+        wondershaper -a eth1 -d 94000 -u 94000  # could be used on a 100Mbps link
 
-	wondershaper -a eth1 -u 94000  # only limit upload
+        wondershaper -a eth1 -u 94000  # only limit upload
 
-	wondershaper -c -a eth0
+        wondershaper -c -a eth0

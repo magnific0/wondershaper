@@ -4,14 +4,17 @@
 # Set the following values to somewhat less than your actual download
 # and uplink speed. In kilobits. Also set the device that is to be shaped.
 #
-# Orginal: bert hubert <ahu@ds9a.nl>, Copyright 2002, Licensed under the GPL
-# Fixes: magnific0 (http://www.github.com/magnific0/wondershaper)
-#        systemd .service and .conf file by kfgz and cmsigler at aur.archlinux.org
+# License GPLv2 <https://gnu.org/licenses/gpl-2.0.html>
+#
+# Copyright (c) 2002-2018 Bert Hubert <ahu@ds9a.nl>,
+#         Jacco Geul <jacco@geul.net>, Simon Séhier <simon@sehier.fr>
+#
+# See the ChangeLog for information on the individual contributions of the authors.
 
 QUANTUM=6000
 BURST=15k
 COMMONOPTIONS="$COMMONOPTIONS"
-
+VERSION=1.4
 
 usage()
 {
@@ -28,6 +31,7 @@ OPTIONS:
    -p           Use presets in /etc/conf.d/wondershaper.conf
    -c           Clear the limits from adapter
    -s           Show the current status of adapter
+   -v           Show the current version
 
 MODES:
    wondershaper -a <adapter> -d <rate> -u <rate>
@@ -48,10 +52,12 @@ IFACE=
 IFB="ifb0"
 MODE=
 
-while getopts hd:u:a:pcs o
+while getopts hvd:u:a:pcs o
 do	case "$o" in
 	h)	usage
 		exit 1;;
+        v)      echo "Version $VERSION"
+                exit 0;;
 	d)	DSPEED=$OPTARG;;
 	u)      USPEED=$OPTARG;;
 	a)      IFACE=$OPTARG;;
@@ -224,7 +230,8 @@ then
 
     # Redirect ingress (incoming) to egress ifb0
     tc qdisc add dev $IFACE handle ffff: ingress
-    tc filter add dev $IFACE parent ffff: protocol ip u32 match u32 0 0 action mirred egress redirect dev $IFB
+    tc filter add dev $IFACE parent ffff: protocol ip u32 match u32 0 0 \
+        action mirred egress redirect dev $IFB
     
     # Add class and rules for virtual
     tc qdisc add dev $IFB root handle 2: htb
