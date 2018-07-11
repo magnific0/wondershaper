@@ -142,21 +142,27 @@ then
 
     # high prio class 1:10:
 
+    RATE=$[40*$USPEED/100]
+    if [ $RATE -eq 0 ]; then RATE=1 ; fi
     tc class add dev $IFACE parent 1:1 classid 1:10 htb \
-        rate $[40*$USPEED/100]kbit ceil $[95*$USPEED/100]kbit \
+        rate ${RATE}kbit ceil $[95*$USPEED/100]kbit \
         prio 1 $COMMONOPTIONS
 
     # bulk and default class 1:20 - gets slightly less traffic,
     #  and a lower priority:
 
+    RATE=$[40*$USPEED/100]
+    if [ $RATE -eq 0 ]; then RATE=1 ; fi
     tc class add dev $IFACE parent 1:1 classid 1:20 htb \
-        rate $[40*$USPEED/100]kbit ceil $[95*$USPEED/100]kbit \
+        rate ${RATE}kbit ceil $[95*$USPEED/100]kbit \
         prio 2 $COMMONOPTIONS
 
     # 'traffic we hate'
 
+    RATE=$[20*$USPEED/100]
+    if [ $RATE -eq 0 ]; then RATE=1 ; fi
     tc class add dev $IFACE parent 1:1 classid 1:30 htb \
-        rate $[20*$USPEED/100]kbit ceil $[90*$USPEED/100]kbit \
+        rate ${RATE}kbit ceil $[90*$USPEED/100]kbit \
         prio 3 $COMMONOPTIONS
 
     # all get Stochastic Fairness:
