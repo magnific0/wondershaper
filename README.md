@@ -44,7 +44,7 @@ In the following example a wireless interface is limited to an [upload of 4Mbps 
 
     ./wondershaper -a wlp4s0 -u 4096 -d 8192
 
-If you get messages telling you that ```RTNETLINK answers: Operation not permitted``` your user account does not have sufficient priviliges. In that case try:
+If you get messages telling you that ```RTNETLINK answers: Operation not permitted``` your user account does not have sufficient privileges. In that case try:
 
     sudo ./wondershaper -a wlp4s0 -u 4096 -d 8192
     
