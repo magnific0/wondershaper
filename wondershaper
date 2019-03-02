@@ -25,7 +25,7 @@ Limit the bandwidth of an adapter
 
 OPTIONS:
    -h           Show this message
-   -a <adapter> Set the adpter
+   -a <adapter> Set the adapter
    -d <rate>    Set maximum download rate (in Kbps) and/or
    -u <rate>    Set maximum upload rate (in Kbps)
    -p           Use presets in /etc/conf.d/wondershaper.conf
