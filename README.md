@@ -83,7 +83,7 @@ The following command line options are allowed:
 
 - `-h` Display help
 
-- `-a <adapter>` Set the adpter
+- `-a <adapter>` Set the adapter
 
 - `-d <rate>` Set maximum download rate (in Kbps) and/or
 
