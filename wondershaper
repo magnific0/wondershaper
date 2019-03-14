@@ -166,17 +166,17 @@ then
 
     # start filters
     # TOS Minimum Delay (ssh, NOT scp) in 1:10:
-    tc filter add dev $IFACE parent 1: protocol ip prio 10 u32 \
+    tc filter add dev $IFACE parent 1: prio 10 u32 \
         match ip tos 0x10 0xff  flowid 1:10
 
     # ICMP (ip protocol 1) in the interactive class 1:10 so we
     # can do measurements & impress our friends:
-    tc filter add dev $IFACE parent 1: protocol ip prio 11 u32 \
+    tc filter add dev $IFACE parent 1: prio 11 u32 \
         match ip protocol 1 0xff flowid 1:10
 
     # prioritize small packets (<64 bytes)
 
-    tc filter add dev $IFACE parent 1: protocol ip prio 12 u32 \
+    tc filter add dev $IFACE parent 1: prio 12 u32 \
         match ip protocol 6 0xff \
         match u8 0x05 0x0f at 0 \
         match u16 0x0000 0xffc0 at 2 \
@@ -186,31 +186,31 @@ then
     # some traffic however suffers a worse fate
     for a in $NOPRIOPORTDST
     do
-        tc filter add dev $IFACE parent 1: protocol ip prio 14 u32 \
+        tc filter add dev $IFACE parent 1: prio 14 u32 \
             match ip dport $a 0xffff flowid 1:30
     done
 
     for a in $NOPRIOPORTSRC
     do
-        tc filter add dev $IFACE parent 1: protocol ip prio 15 u32 \
+        tc filter add dev $IFACE parent 1: prio 15 u32 \
             match ip sport $a 0xffff flowid 1:30
     done
 
     for a in $NOPRIOHOSTSRC
     do
-        tc filter add dev $IFACE parent 1: protocol ip prio 16 u32 \
+        tc filter add dev $IFACE parent 1: prio 16 u32 \
             match ip src $a flowid 1:30
     done
 
     for a in $NOPRIOHOSTDST
     do
-        tc filter add dev $IFACE parent 1: protocol ip prio 17 u32 \
+        tc filter add dev $IFACE parent 1: prio 17 u32 \
             match ip dst $a flowid 1:30
     done
 
     # rest is 'non-interactive' ie 'bulk' and ends up in 1:20
 
-    tc filter add dev $IFACE parent 1: protocol ip prio 18 u32 \
+    tc filter add dev $IFACE parent 1: prio 18 u32 \
         match ip dst 0.0.0.0/0 flowid 1:20
     
 fi
@@ -230,7 +230,7 @@ then
 
     # Redirect ingress (incoming) to egress ifb0
     tc qdisc add dev $IFACE handle ffff: ingress
-    tc filter add dev $IFACE parent ffff: protocol ip u32 match u32 0 0 \
+    tc filter add dev $IFACE parent ffff: u32 match u32 0 0 \
         action mirred egress redirect dev $IFB
     
     # Add class and rules for virtual
@@ -238,6 +238,6 @@ then
     tc class add dev $IFB parent 2: classid 2:1 htb rate ${DSPEED}kbit
     
     # Add filter to rule for IP address
-    tc filter add dev $IFB protocol ip parent 2: prio 1 u32 match ip src 0.0.0.0/0 flowid 2:1
+    tc filter add dev $IFB parent 2: prio 1 u32 match ip src 0.0.0.0/0 flowid 2:1
     
 fi
