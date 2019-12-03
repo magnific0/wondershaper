@@ -20,7 +20,7 @@ Installation
 
 It is recommended to clone the GitHub repository of wondershaper such that you can pull in new updates at any time (if available). Open a new terminal and clone the repository using
 
-    git clone  https://github.com/magnific0/wondershaper.git
+    git clone https://github.com/magnific0/wondershaper.git
 
 This will clone wondershaper in your current folder in a new folder named wondershaper. Now enter the folder using
 
