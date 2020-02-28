@@ -4,7 +4,7 @@ The Wonder Shaper 1.4.1
 Copyright
 -------------
 
-Copyright (c) 2002-2017 Bert Hubert <ahu@ds9a.nl>, Jacco Geul <jacco@geul.net>, Simon Séhier <simon@sehier.fr>
+Copyright (c) 2002-2020 Bert Hubert <ahu@ds9a.nl>, Jacco Geul <jacco@geul.net>, Simon Séhier <simon@sehier.fr>, corbolais@gmail.com
 
 See the ChangeLog for information on the individual contributions of the authors.
 
