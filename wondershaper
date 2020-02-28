@@ -16,7 +16,6 @@
 # See the ChangeLog for information on the individual contributions of the authors.
 
 QUANTUM="6000";
-COMMONOPTIONS="$COMMONOPTIONS";
 VERSION="1.4";
 CONF="/etc/systemd/wondershaper.conf";
 
@@ -31,14 +30,13 @@ OPTIONS:
    -a <adapter> Set the adapter
    -d <rate>    Set maximum download rate (in Kbps) and/or
    -u <rate>    Set maximum upload rate (in Kbps)
-   -p           Use presets in $CONF
+   -p           Use presets in \"$CONF\"
    -c           Clear the limits from adapter
    -s           Show the current status of adapter
    -v           Show the current version
 
-   In wondershaper itself, configure HIPRIODST for
-   hosts requiring high priority i.e. in case ssh
-   uses dport 443.
+   Configure HIPRIODST in \"$CONF\"for hosts
+   requiring high priority i.e. in case ssh uses dport 443.
 
 MODES:
    wondershaper -a <adapter> -d <rate> -u <rate>
@@ -111,10 +109,6 @@ if { [[ -z "$DSPEED" ]] && [[ -z "$USPEED" ]]; } || [[ -z "$IFACE" ]]; then
     usage;
     exit 1;
 fi;
-
-# high priority OUTGOING traffic - usefull i.e. in case ssh is using
-#  port 443 on a specific host
-HIPRIODST="";
 
 # low priority OUTGOING traffic - you can leave this blank if you want
 # low priority source netmasks
