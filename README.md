@@ -25,17 +25,17 @@ It is recommended to clone the GitHub repository of wondershaper such that you c
 This will clone wondershaper in your current folder in a new folder named wondershaper. Now enter the folder using
 
     cd wondershaper
-    
+
 ### Using wondershaper
-    
+
 You can run wondershaper (as any user with sufficient permissions) without installation and stop following the instructions at this point. Show the wondershaper usage instructions by typing
 
     ./wondershaper -h
-    
+
 The program details all available options on how to use wondershaper. Next is to pick an interface that you want to shape. You can see all availble interfaces by typing
 
     ip addr show
-    
+
 Note that on older systems this command might not be available. In this case you should run ```ifconfig``` instead.
 
 Identify the network interface that you want to shape. The names [differ per system](https://www.freedesktop.org/wiki/Software/systemd/PredictableNetworkInterfaceNames/).
@@ -47,17 +47,17 @@ In the following example a wireless interface is limited to an [upload of 4Mbps 
 If you get messages telling you that ```RTNETLINK answers: Operation not permitted``` your user account does not have sufficient privileges. In that case try:
 
     sudo ./wondershaper -a wlp4s0 -u 4096 -d 8192
-    
+
 ### System installation (optional)
 
 A makefile file provided for easy installation. The default location for wondershaper is in ```/usr/bin```. If you want to install to your system you can run:
 
     sudo make install
-        
+
 You can verify that wondershaper was installed correctly by entering:
 
     which wondershaper
-    
+
 This should return ```/usr/bin/wondershaper```. You can follow the same instructions as explained in the "Using wondershaper" section, but instead of running the local version of the program you now run the system version by removing the ```./``` from the beginning of each command. For example to show the help instructions again run:
 
     wondershaper -h
@@ -66,12 +66,12 @@ This should return ```/usr/bin/wondershaper```. You can follow the same instruct
 
 To make sure wondershaper is reactivated on reboot a systemd service file is provided. First enable wondershapre as a systemd service using:
 
-    sudo systemctl enable wondershaper.service 
- 
+    sudo systemctl enable wondershaper.service
+
 Instead of using the commandline options to set the rates and interface as previously shown, it is necessary to set these parameters in the ```wondershaper.conf``` configuration file. You can edit this file using your favourite text editor (nano in the example below) as such:
 
     sudo nano /etc/conf.d/wondershaper.conf
-    
+
 This way wondershaper is activated with your setting upon reboot.
 
 Usage
