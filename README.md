@@ -64,13 +64,13 @@ This should return ```/usr/bin/wondershaper```. You can follow the same instruct
 
 ### Persistent usage of wondershaper (optional)
 
-To make sure wondershaper is reactivated on reboot a systemd service file is provided. First enable wondershapre as a systemd service using:
+Instead of using the commandline options to set the rates and interface as previously shown, it is necessary to set these parameters in the ```wondershaper.conf``` configuration file. You can edit this file using your favourite text editor (vim in the example below) as such:
 
-    sudo systemctl enable wondershaper.service
+    sudo vim /etc/systemd/wondershaper.conf
 
-Instead of using the commandline options to set the rates and interface as previously shown, it is necessary to set these parameters in the ```wondershaper.conf``` configuration file. You can edit this file using your favourite text editor (nano in the example below) as such:
+To make sure wondershaper is reactivated on reboot a systemd service file is provided. Enable and start wondershaper as a systemd service using:
 
-    sudo nano /etc/conf.d/wondershaper.conf
+    sudo systemctl enable --now wondershaper.service
 
 This way wondershaper is activated with your setting upon reboot.
 
@@ -89,7 +89,7 @@ The following command line options are allowed:
 
 - `-u <rate>` Set maximum upload rate (in Kbps)
 
-- `-p` Use the presets in /etc/conf.d/wondershaper.conf
+- `-p` Use the presets in /etc/systemd/wondershaper.conf
 
 - `-c` Clear the limits from adapter
 
