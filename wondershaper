@@ -30,12 +30,12 @@ OPTIONS:
    -a <adapter> Set the adapter
    -d <rate>    Set maximum download rate (in Kbps) and/or
    -u <rate>    Set maximum upload rate (in Kbps)
-   -p           Use presets in \"$CONF\"
+   -p           Use presets in "$CONF"
    -c           Clear the limits from adapter
    -s           Show the current status of adapter
    -v           Show the current version
 
-   Configure HIPRIODST in \"$CONF\"for hosts
+   Configure HIPRIODST in "$CONF"for hosts
    requiring high priority i.e. in case ssh uses dport 443.
 
 MODES:
