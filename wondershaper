@@ -15,7 +15,6 @@
 # See the ChangeLog for information on the individual contributions of the authors.
 
 QUANTUM="6000";
-#BURST="15k";
 COMMONOPTIONS="$COMMONOPTIONS";
 VERSION="1.4";
 CONF="/etc/systemd/wondershaper.conf";
