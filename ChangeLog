@@ -1,6 +1,10 @@
+Changes since version 1.4.1 - <corbolais@gmail.com>:
+    - use Debian systemd paths
+    - add high priority host support
+
 Changes since version 1.4 - Jacco Geul <jacco@geul.net>:
-    - download limiting has been added from (removed in 1.3), it had to be 
-      reworked the script now directs ingress to ifb virtual interface where 
+    - download limiting has been added from (removed in 1.3), it had to be
+      reworked the script now directs ingress to ifb virtual interface where
       it is properly limited. Source for this work are:
       - https://gist.github.com/ole1986/d9d6be5218affd41796610a35e3b069c
       - https://wiki.archlinux.org/index.php/advanced_traffic_control
@@ -14,8 +18,8 @@ Changes since version 1.3 - Simon Séhier <simon@sehier.fr>:
           any caveats on SIP telephony or link reactivity.
 
 Changes since version 1.2 - Jacco Geul <jacco@geul.net>:
-        - added command-line interface (through options and flags) 
-          that didn't seem to be working before as the options were 
+        - added command-line interface (through options and flags)
+          that didn't seem to be working before as the options were
           hardcoded in the script.
 
 Changes since version 1.1 - Bert Hubert <ahu@ds9a.nl>:
