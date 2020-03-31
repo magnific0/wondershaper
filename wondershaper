@@ -18,6 +18,7 @@
 QUANTUM="6000";
 VERSION="1.4.1";
 CONF="/etc/systemd/wondershaper.conf";
+CONFLEGACY="/etc/conf.d/wondershaper.conf";
 # shellcheck disable=SC2086
 eval export HIPRIODST=$HIPRIODST;
 # shellcheck disable=SC2086
@@ -47,7 +48,7 @@ OPTIONS:
    -s           Show the current status of adapter
    -v           Show the current version
 
-   Configure HIPRIODST in "$CONF"for hosts
+   Configure HIPRIODST in "$CONF" for hosts
    requiring high priority i.e. in case ssh uses dport 443.
 
 MODES:
@@ -90,6 +91,9 @@ if [ "$MODE" = "presets" ]; then
   if [ -f "$CONF" ]; then
     # shellcheck disable=SC1090
     source "$CONF";
+  elif [ -f "$CONFLEGACY" ]; then
+    # shellcheck disable=SC1090
+    source "$CONFLEGACY";
   else
     echo "$CONF not found";
     exit 1;
@@ -134,7 +138,7 @@ tc qdisc add dev "$IFACE" root handle 1: htb default 20;
 if [[ -n "$USPEED" ]]; then
   tc class add dev "$IFACE" parent 1: classid 1:1 htb \
     rate "${USPEED}kbit" \
-    prio 5 "${COMMONOPTIONS[@]}";
+    prio 5 ${COMMONOPTIONS[@]};
 
   # high prio class 1:10:
 
@@ -142,7 +146,7 @@ if [[ -n "$USPEED" ]]; then
   if [ "$RATE" -eq 0 ]; then RATE=1 ; fi
   tc class add dev "$IFACE" parent 1:1 classid 1:10 htb \
     rate "${RATE}kbit" ceil $((95*"$USPEED"/100))kbit \
-    prio 1 "${COMMONOPTIONS[@]}";
+    prio 1 ${COMMONOPTIONS[@]};
 
   # bulk and default class 1:20 - gets slightly less traffic,
   #  and a lower priority:
@@ -151,7 +155,7 @@ if [[ -n "$USPEED" ]]; then
   if [ "$RATE" -eq 0 ]; then RATE=1 ; fi
   tc class add dev "$IFACE" parent 1:1 classid 1:20 htb \
     rate "${USPEED}kbit" ceil $((95*"$USPEED"/100))kbit \
-    prio 2 "${COMMONOPTIONS[@]}";
+    prio 2 ${COMMONOPTIONS[@]};
 
   # 'traffic we hate'
 
@@ -159,12 +163,12 @@ if [[ -n "$USPEED" ]]; then
   if [ "$RATE" -eq 0 ]; then RATE=1 ; fi
   tc class add dev "$IFACE" parent 1:1 classid 1:30 htb \
     rate "${USPEED}kbit" ceil $((90*"$USPEED"/100))kbit \
-    prio 3 "${COMMONOPTIONS[@]}";
+    prio 3 ${COMMONOPTIONS[@]};
 
   # all get Stochastic Fairness:
   tc qdisc add dev "$IFACE" parent 1:10 handle 10: sfq perturb 10 quantum "$QUANTUM";
   tc qdisc add dev "$IFACE" parent 1:20 handle 20: sfq perturb 10 quantum "$QUANTUM";
-  tc qdisc add dev "$IFACE" parent 1:30 handle 30: sfq perturb 10 quantum "$QUANTUM"
+  tc qdisc add dev "$IFACE" parent 1:30 handle 30: sfq perturb 10 quantum "$QUANTUM";
 
   # start filters
   # TOS Minimum Delay (ssh, NOT scp) in 1:10:
@@ -206,7 +210,7 @@ if [[ -n "$USPEED" ]]; then
   done;
 
   for a in "${NOPRIOHOSTDST[@]}"; do
-    tc filter add dev "$IFACE"parent 1: protocol ip prio 17 u32 \
+    tc filter add dev "$IFACE" parent 1: protocol ip prio 17 u32 \
       match ip dst "$a"flowid 1:30;
   done;
 
