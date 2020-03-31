@@ -1,10 +1,6 @@
 Changes since version 1.4.1 - <corbolais@gmail.com>:
-    - Use Debian paths
-    - clean up w/s
+    - use Debian systemd paths
     - add high priority host support
-    - remove unused var
-    - shellcheck
-    - consistent shell syntax
 
 Changes since version 1.4 - Jacco Geul <jacco@geul.net>:
     - download limiting has been added from (removed in 1.3), it had to be
