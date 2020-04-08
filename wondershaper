@@ -100,6 +100,8 @@ if [ "$MODE" = "presets" ]; then
   fi;
 fi;
 
+
+
 if [[ -n "$MODE" ]] && [[ -z "$IFACE" ]]; then
     echo "Please supply the adapter name for the mode."
     echo "";
@@ -174,9 +176,11 @@ if [[ -n "$USPEED" ]]; then
   # TOS Minimum Delay (ssh, NOT scp) in 1:10:
   tc filter add dev "$IFACE" parent 1: protocol ip prio 10 u32 \
     match ip tos 0x10 0xff  flowid 1:10;
-  for host in "${HIPRIODST[@]}"; do
+  for dst in "${HIPRIODST[@]}"; do
+    [ -n "$dst" ] || continue
+    echo "$dst";
     tc filter add dev "$IFACE" parent 1: protocol ip prio 10 u32 \
-      match ip dst "$host" flowid 1:10;
+      match ip dst "$dst" flowid 1:10;
   done;
 
   # ICMP (ip protocol 1) in the interactive class 1:10 so we
@@ -194,24 +198,28 @@ if [[ -n "$USPEED" ]]; then
 
 
   # some traffic however suffers a worse fate
-  for a in "${NOPRIOPORTDST[@]}"; do
+  for dport in "${NOPRIOPORTDST[@]}"; do
+    [ -n "$dport" ] || continue
     tc filter add dev "$IFACE" parent 1: protocol ip prio 14 u32 \
-      match ip dport "$a" 0xffff flowid 1:30;
+      match ip dport "$dport" 0xffff flowid 1:30;
   done;
 
-  for a in "${NOPRIOPORTSRC[@]}"; do
+  for sport in "${NOPRIOPORTSRC[@]}"; do
+    [ -n "$sport" ] || continue
     tc filter add dev "$IFACE" parent 1: protocol ip prio 15 u32 \
-      match ip sport "$a" 0xffff flowid 1:30;
+      match ip sport "$sport" 0xffff flowid 1:30;
   done;
 
-  for a in "${NOPRIOHOSTSRC[@]}"; do
+  for src in "${NOPRIOHOSTSRC[@]}"; do
+    [ -n "$src" ] || continue
     tc filter add dev "$IFACE" parent 1: protocol ip prio 16 u32 \
-      match ip src "$a" flowid 1:30;
+      match ip src "$src" flowid 1:30;
   done;
 
-  for a in "${NOPRIOHOSTDST[@]}"; do
+  for dst in "${NOPRIOHOSTDST[@]}"; do
+    [ -n "$dst" ] || continue
     tc filter add dev "$IFACE" parent 1: protocol ip prio 17 u32 \
-      match ip dst "$a"flowid 1:30;
+      match ip dst "$dst" flowid 1:30;
   done;
 
   # rest is 'non-interactive' ie 'bulk' and ends up in 1:20
