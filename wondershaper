@@ -156,7 +156,7 @@ if [[ -n "$USPEED" ]]; then
   RATE=$((40*${USPEED}/100))
   if [ "$RATE" -eq 0 ]; then RATE=1 ; fi
   tc class add dev "$IFACE" parent 1:1 classid 1:20 htb \
-    rate "${USPEED}kbit" ceil $((95*${USPEED}/100))kbit \
+    rate "${RATE}kbit" ceil $((95*${USPEED}/100))kbit \
     prio 2 ${COMMONOPTIONS[@]};
 
   # 'traffic we hate'
@@ -164,7 +164,7 @@ if [[ -n "$USPEED" ]]; then
   RATE=$((20*${USPEED}/100))
   if [ "$RATE" -eq 0 ]; then RATE=1 ; fi
   tc class add dev "$IFACE" parent 1:1 classid 1:30 htb \
-    rate "${USPEED}kbit" ceil $((90*${USPEED}/100))kbit \
+    rate "${RATE}kbit" ceil $((90*${USPEED}/100))kbit \
     prio 3 ${COMMONOPTIONS[@]};
 
   # all get Stochastic Fairness:
