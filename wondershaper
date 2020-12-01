@@ -112,7 +112,7 @@ fi;
 if [ "$MODE" = "status" ]; then
     tc -s qdisc ls dev "$IFACE";
     tc -s class ls dev "$IFACE";
-    exit;
+    exit 0;
 fi;
 
 if [ "$MODE" = "clear" ]; then
@@ -120,7 +120,7 @@ if [ "$MODE" = "clear" ]; then
     tc qdisc del dev "$IFACE" ingress 2> /dev/null > /dev/null;
     tc qdisc del dev "$IFB"   root    2> /dev/null > /dev/null;
     tc qdisc del dev "$IFB"   ingress 2> /dev/null > /dev/null;
-    exit;
+    exit 0;
 fi;
 
 if { [[ -z "$DSPEED" ]] && [[ -z "$USPEED" ]]; } || [[ -z "$IFACE" ]]; then
