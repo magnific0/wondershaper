@@ -11,7 +11,7 @@ See the ChangeLog for information on the individual contributions of the authors
 About
 --------------
 
-Wonder Shaper is a script that allows the user to limit the bandwidth of one or more network adapters. It does so by using iproute's tc command, but greatly simplifies its operation. Wonder Shaper was first released by Bert Hubert in 2002, but the original version lacked a command-line interface, from on version 1.2 this feature was added. From version 1.3, the HTB queing is used instead of CBQ, allowing better bandwith managment on high speed (above ten megabits) links. In version 1.4 an improved ingress shaping method was implemented and the ability to limit either down or up (both is still possible too). The original README is a rather lengthy document and is saved under README.old, for those who'd like some more background information. Except any notes on operation this document is considered up-to-date.
+Wonder Shaper is a script that allows the user to limit the bandwidth of one or more network adapters. It does so by using iproute's tc command, but greatly simplifies its operation. Wonder Shaper was first released by Bert Hubert in 2002, but the original version lacked a command-line interface, from on version 1.2 this feature was added. From version 1.3, the HTB queuing is used instead of CBQ, allowing better bandwidth management on high speed (above ten megabits) links. In version 1.4 an improved ingress shaping method was implemented and the ability to limit either down or up (both is still possible too). The original README is a rather lengthy document and is saved under README.old, for those who'd like some more background information. Except any notes on operation this document is considered up-to-date.
 
 Installation
 --------------
@@ -32,7 +32,7 @@ You can run wondershaper (as any user with sufficient permissions) without insta
 
     ./wondershaper -h
 
-The program details all available options on how to use wondershaper. Next is to pick an interface that you want to shape. You can see all availble interfaces by typing
+The program details all available options on how to use wondershaper. Next is to pick an interface that you want to shape. You can see all available interfaces by typing
 
     ip addr show
 

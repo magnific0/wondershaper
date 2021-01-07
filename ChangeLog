@@ -11,10 +11,10 @@ Changes since version 1.4 - Jacco Geul <jacco@geul.net>:
     - make upload or download limiting optional
 
 Changes since version 1.3 - Simon Séhier <simon@sehier.fr>:
-        - move from CBQ to HTB queing.
+        - move from CBQ to HTB queuing.
           CBQ didn't cope well on a ~100Mbps link : individual downloads
           were ceiling at 3Mbit/s. Moving to HTB allows to really use all the
-          available bandwith, event with a single TCP connection, and without
+          available bandwidth, event with a single TCP connection, and without
           any caveats on SIP telephony or link reactivity.
 
 Changes since version 1.2 - Jacco Geul <jacco@geul.net>:
