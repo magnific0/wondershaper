@@ -1,6 +1,6 @@
 wondershaper:
 	exit;
-  
+
 install:
 	install -Dm755 wondershaper /usr/bin/wondershaper;
 	install -Dm644 wondershaper.service /etc/systemd/system/wondershaper.service;
@@ -12,4 +12,4 @@ uninstall:
 	rm -f /etc/systemd/wondershaper.conf;
 
 clean:
-	rm  wondershaper;
+	rm wondershaper;
