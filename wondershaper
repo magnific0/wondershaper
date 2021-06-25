@@ -44,6 +44,7 @@ OPTIONS:
    -d <rate>    Set maximum download rate (in Kbps) and/or
    -u <rate>    Set maximum upload rate (in Kbps)
    -p           Use presets in "$CONF"
+   -f <file>    Use alternative preset file
    -c           Clear the limits from adapter
    -s           Show the current status of adapter
    -v           Show the current version
@@ -60,6 +61,7 @@ EXAMPLES:
    wondershaper -a eth0 -d 1024 -u 512
    wondershaper -a eth0 -u 512
    wondershaper -c -a eth0
+   wondershaper -p -f foo.conf
 
 EOF
 }
@@ -70,12 +72,13 @@ IFACE="";
 IFB="ifb0";
 MODE="";
 
-while getopts hvd:u:a:pcs o; do
+while getopts hvf:d:u:a:pcs o; do
   case "$o" in
     h)	usage;
       exit 1;;
     v) echo "Version $VERSION";
       exit 0;;
+    f) CONF="$OPTARG";;
     d) DSPEED="$OPTARG";;
     u) USPEED="$OPTARG";;
     a) IFACE="$OPTARG";;
