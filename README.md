@@ -92,6 +92,8 @@ The following command line options are allowed:
 
 - `-p` Use the presets in /etc/systemd/wondershaper.conf
 
+- `-f <file>` Use alternative preset file
+
 - `-c` Clear the limits from adapter
 
 - `-s` Show the current status of adapter
@@ -113,3 +115,5 @@ Some examples:
         wondershaper -a eth1 -u 94000  # only limit upload
 
         wondershaper -c -a eth0
+
+        wondershaper -p -f foo.conf
