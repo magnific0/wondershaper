@@ -1,6 +1,6 @@
 [Unit]
 Description=Bandwidth shaper/Network rate limiter
-After=network.target
+After=network-online.target
 Wants=network.target
 
 [Service]
