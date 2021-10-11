@@ -76,7 +76,8 @@ DSPEED="";
 USPEED="";
 IFACE="";
 IFB="ifb0";
-MODE="";
+LOAD_PRESETS=false
+MODE=""
 
 while getopts hvf:d:u:a:pcs o; do
   case "$o" in
@@ -88,7 +89,7 @@ while getopts hvf:d:u:a:pcs o; do
     d) DSPEED="$OPTARG";;
     u) USPEED="$OPTARG";;
     a) IFACE="$OPTARG";;
-    p) MODE="presets";;
+    p) LOAD_PRESETS=true;;
     c) MODE="clear";;
     s) MODE="status";;
     [?])	usage;
@@ -96,7 +97,7 @@ while getopts hvf:d:u:a:pcs o; do
 	esac;
 done;
 
-if [ "$MODE" = "presets" ]; then
+if [ "$LOAD_PRESETS" = true ]; then
   if [ -f "$CONF" ]; then
     # shellcheck disable=SC1090
     source "$CONF";
@@ -111,7 +112,7 @@ fi;
 
 
 
-if [[ -n "$MODE" ]] && [[ -z "$IFACE" ]]; then
+if [[ -z "$IFACE" ]]; then
     echo "Please supply the adapter name for the mode."
     echo "";
     usage;
@@ -132,7 +133,7 @@ if [ "$MODE" = "clear" ]; then
     exit;
 fi;
 
-if { [[ -z "$DSPEED" ]] && [[ -z "$USPEED" ]]; } || [[ -z "$IFACE" ]]; then
+if [[ -z "$DSPEED" ]] && [[ -z "$USPEED" ]]; then
     usage;
     exit 1;
 fi;
