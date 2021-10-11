@@ -7,8 +7,8 @@ Wants=network.target
 Type=oneshot
 RemainAfterExit=yes
 EnvironmentFile=/etc/systemd/wondershaper.conf
-ExecStart=/usr/sbin/wondershaper -a $IFACE -d $DSPEED -u $USPEED
-ExecStop=/usr/sbin/wondershaper -c -a $IFACE
+ExecStart=@sbindir@/wondershaper -a $IFACE -d $DSPEED -u $USPEED
+ExecStop=@sbindir@/wondershaper -c -a $IFACE
 
 [Install]
 WantedBy=multi-user.target

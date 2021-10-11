@@ -10,7 +10,11 @@ sysconfdir=/etc
 wondershaper:
 	exit;
   
-install:
+
+wondershaper.service: wondershaper.service.in
+	sed 's|@sbindir@|$(sbindir)|' wondershaper.service.in > wondershaper.service
+
+install: wondershaper.service
 	install -Dm755 wondershaper $(sbindir)/wondershaper;
 	install -Dm644 wondershaper.service $(libdir)/systemd/system/wondershaper.service;
 	install -Dm644 wondershaper.conf $(sysconfdir)/systemd/wondershaper.conf;
