@@ -50,7 +50,7 @@ If you get messages telling you that ```RTNETLINK answers: Operation not permitt
 
 ### System installation (optional)
 
-A makefile file provided for easy installation. The default location for wondershaper is in ```/usr/bin```. If you want to install to your system you can run:
+A makefile file provided for easy installation. The default location for wondershaper is in ```/usr/local/sbin```. If you want to install to your system you can run:
 
     sudo make install
 
@@ -58,7 +58,7 @@ You can verify that wondershaper was installed correctly by entering:
 
     which wondershaper
 
-This should return ```/usr/bin/wondershaper```. You can follow the same instructions as explained in the "Using wondershaper" section, but instead of running the local version of the program you now run the system version by removing the ```./``` from the beginning of each command. For example to show the help instructions again run:
+This should return ```/usr/local/sbin/wondershaper```. You can follow the same instructions as explained in the "Using wondershaper" section, but instead of running the local version of the program you now run the system version by removing the ```./``` from the beginning of each command. For example to show the help instructions again run:
 
     wondershaper -h
 
