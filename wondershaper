@@ -186,17 +186,23 @@ if [[ -n "$USPEED" ]]; then
   # TOS Minimum Delay (ssh, NOT scp) in 1:10:
   tc filter add dev "$IFACE" parent 1: protocol ip prio 10 u32 \
     match ip tos 0x10 0xff  flowid 1:10;
+  tc filter add dev "$IFACE" parent 1: protocol ipv6 prio 10 u32 \
+    match ip6 tos 0x10 0xff  flowid 1:10;
   for dst in "${HIPRIODST[@]}"; do
     [ -n "$dst" ] || continue
     echo "$dst";
     tc filter add dev "$IFACE" parent 1: protocol ip prio 10 u32 \
       match ip dst "$dst" flowid 1:10;
+    tc filter add dev "$IFACE" parent 1: protocol ipv6 prio 10 u32 \
+      match ip6 dst "$dst" flowid 1:10;
   done;
 
   # ICMP (ip protocol 1) in the interactive class 1:10 so we
   # can do measurements & impress our friends:
   tc filter add dev "$IFACE" parent 1: protocol ip prio 11 u32 \
     match ip protocol 1 0xff flowid 1:10;
+  tc filter add dev "$IFACE" parent 1: protocol ipv6 prio 11 u32 \
+    match ip6 protocol 1 0xff flowid 1:10;
 
   # prioritize small packets (<64 bytes)
 
@@ -206,23 +212,34 @@ if [[ -n "$USPEED" ]]; then
     match u16 0x0000 0xffc0 at 2 \
     flowid 1:10;
 
+  tc filter add dev "$IFACE" parent 1: protocol ipiv6 prio 12 u32 \
+    match ip6 protocol 6 0xff \
+    match u8 0x05 0x0f at 0 \
+    match u16 0x0000 0xffc0 at 2 \
+    flowid 1:10;
 
   # some traffic however suffers a worse fate
   for dport in "${NOPRIOPORTDST[@]}"; do
     [ -n "$dport" ] || continue
     tc filter add dev "$IFACE" parent 1: protocol ip prio 14 u32 \
       match ip dport "$dport" 0xffff flowid 1:30;
+    tc filter add dev "$IFACE" parent 1: protocol ipv6 prio 14 u32 \
+      match ip6 dport "$dport" 0xffff flowid 1:30;
   done;
 
   for sport in "${NOPRIOPORTSRC[@]}"; do
     [ -n "$sport" ] || continue
     tc filter add dev "$IFACE" parent 1: protocol ip prio 15 u32 \
       match ip sport "$sport" 0xffff flowid 1:30;
+    tc filter add dev "$IFACE" parent 1: protocol ipv6 prio 15 u32 \
+      match ip6 sport "$sport" 0xffff flowid 1:30;
   done;
 
   for src in "${NOPRIOHOSTSRC[@]}"; do
     [ -n "$src" ] || continue
     tc filter add dev "$IFACE" parent 1: protocol ip prio 16 u32 \
+      match ip src "$src" flowid 1:30;
+    tc filter add dev "$IFACE" parent 1: protocol ipv6 prio 16 u32 \
       match ip src "$src" flowid 1:30;
   done;
 
@@ -230,12 +247,16 @@ if [[ -n "$USPEED" ]]; then
     [ -n "$dst" ] || continue
     tc filter add dev "$IFACE" parent 1: protocol ip prio 17 u32 \
       match ip dst "$dst" flowid 1:30;
+    tc filter add dev "$IFACE" parent 1: protocol ipv6 prio 17 u32 \
+      match ip6 dst "$dst" flowid 1:30;
   done;
 
   # rest is 'non-interactive' ie 'bulk' and ends up in 1:20
 
   tc filter add dev "$IFACE" parent 1: protocol ip prio 18 u32 \
     match ip dst 0.0.0.0/0 flowid 1:20;
+  tc filter add dev "$IFACE" parent 1: protocol ipv6 prio 18 u32 \
+    match ip6 dst ::/0 flowid 1:20;
 
 fi;
 
@@ -254,6 +275,8 @@ if [[ -n "$DSPEED" ]]; then
   tc qdisc add dev "$IFACE" handle ffff: ingress
   tc filter add dev "$IFACE" parent ffff: protocol ip u32 match u32 0 0 \
       action mirred egress redirect dev "$IFB";
+  tc filter add dev "$IFACE" parent ffff: protocol ipv6 u32 match u32 0 0 \
+      action mirred egress redirect dev "$IFB";
 
   # Add class and rules for virtual
   tc qdisc add dev "$IFB" root handle 2: htb;
@@ -262,6 +285,8 @@ if [[ -n "$DSPEED" ]]; then
   # Add filter to rule for IP address
   tc filter add dev "$IFB" protocol ip parent 2: prio 1 u32 \
     match ip src 0.0.0.0/0 flowid 2:1;
+  tc filter add dev "$IFB" protocol ipv6 parent 2: prio 2 u32 \
+    match ip6 src ::/0 flowid 2:1;
 
 fi;
 
