@@ -212,7 +212,7 @@ if [[ -n "$USPEED" ]]; then
     match u16 0x0000 0xffc0 at 2 \
     flowid 1:10;
 
-  tc filter add dev "$IFACE" parent 1: protocol ipiv6 prio 12 u32 \
+  tc filter add dev "$IFACE" parent 1: protocol ipv6 prio 12 u32 \
     match ip6 protocol 6 0xff \
     match u8 0x05 0x0f at 0 \
     match u16 0x0000 0xffc0 at 2 \
