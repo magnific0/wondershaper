@@ -53,6 +53,7 @@ OPTIONS:
    -f <file>    Use alternative preset file
    -c           Clear the limits from adapter
    -s           Show the current status of adapter
+   -m           Modify the current configuration
    -v           Show the current version
 
    Configure HIPRIODST in "$CONF" for hosts
@@ -60,12 +61,14 @@ OPTIONS:
 
 MODES:
    wondershaper -a <adapter> -d <rate> -u <rate>
+   wondershaper -m -a <adapter> -d <rate> -u <rate>
    wondershaper -c -a <adapter>
    wondershaper -s -a <adapter>
 
 EXAMPLES:
    wondershaper -a eth0 -d 1024 -u 512
    wondershaper -a eth0 -u 512
+   wondershaper -m -a eth0 -u 256
    wondershaper -c -a eth0
    wondershaper -p -f foo.conf
 
@@ -78,8 +81,9 @@ IFACE="";
 IFB="ifb0";
 LOAD_PRESETS=false
 MODE=""
+TCMODE="add"
 
-while getopts hvf:d:u:a:pcs o; do
+while getopts hvf:d:u:a:pcsm o; do
   case "$o" in
     h)	usage;
       exit 1;;
@@ -92,6 +96,7 @@ while getopts hvf:d:u:a:pcs o; do
     p) LOAD_PRESETS=true;;
     c) MODE="clear";;
     s) MODE="status";;
+    m) TCMODE="change";;
     [?])	usage;
 		exit 1;;
 	esac;
@@ -142,13 +147,15 @@ fi;
 
 # install root HTB
 
-tc qdisc add dev "$IFACE" root handle 1: htb default 20;
+if [ "$TCMODE" = "add" ]; then
+  tc qdisc add dev "$IFACE" root handle 1: htb default 20;
+fi;
 
 # shape everything at $USPEED speed - this prevents huge queues in your
 # DSL modem which destroy latency:
 # main class
 if [[ -n "$USPEED" ]]; then
-  tc class add dev "$IFACE" parent 1: classid 1:1 htb \
+  tc class $TCMODE dev "$IFACE" parent 1: classid 1:1 htb \
     rate "${USPEED}kbit" \
     prio 5 ${COMMONOPTIONS[@]};
 
@@ -156,7 +163,7 @@ if [[ -n "$USPEED" ]]; then
 
   RATE=$((20*${USPEED}/100))
   if [ "$RATE" -eq 0 ]; then RATE=1 ; fi
-  tc class add dev "$IFACE" parent 1:1 classid 1:10 htb \
+  tc class $TCMODE dev "$IFACE" parent 1:1 classid 1:10 htb \
     rate "${RATE}kbit" ceil $((95*${USPEED}/100))kbit \
     prio 1 ${COMMONOPTIONS[@]};
 
@@ -165,7 +172,7 @@ if [[ -n "$USPEED" ]]; then
 
   RATE=$((40*${USPEED}/100))
   if [ "$RATE" -eq 0 ]; then RATE=1 ; fi
-  tc class add dev "$IFACE" parent 1:1 classid 1:20 htb \
+  tc class $TCMODE dev "$IFACE" parent 1:1 classid 1:20 htb \
     rate "${RATE}kbit" ceil $((95*${USPEED}/100))kbit \
     prio 2 ${COMMONOPTIONS[@]};
 
@@ -173,9 +180,13 @@ if [[ -n "$USPEED" ]]; then
 
   RATE=$((20*${USPEED}/100))
   if [ "$RATE" -eq 0 ]; then RATE=1 ; fi
-  tc class add dev "$IFACE" parent 1:1 classid 1:30 htb \
+  tc class $TCMODE dev "$IFACE" parent 1:1 classid 1:30 htb \
     rate "${RATE}kbit" ceil $((90*${USPEED}/100))kbit \
     prio 3 ${COMMONOPTIONS[@]};
+
+fi;
+
+if [[ -n "$USPEED" ]] && [ "$TCMODE" = "add" ]; then
 
   # all get Stochastic Fairness:
   tc qdisc add dev "$IFACE" parent 1:10 handle 10: sfq perturb 10 quantum "$QUANTUM";
@@ -245,7 +256,7 @@ fi;
 # ISPs tend to have *huge* queues to make sure big downloads are fast
 #
 # attach ingress policer:
-if [[ -n "$DSPEED" ]]; then
+if [[ -n "$DSPEED" ]] && [ "$TCMODE" = "add" ]; then
   # Add the IFB interface
   modprobe ifb numifbs=1;
   ip link set dev "$IFB" up;
@@ -257,13 +268,18 @@ if [[ -n "$DSPEED" ]]; then
 
   # Add class and rules for virtual
   tc qdisc add dev "$IFB" root handle 2: htb;
-  tc class add dev "$IFB" parent 2: classid 2:1 htb rate "${DSPEED}kbit";
 
   # Add filter to rule for IP address
   tc filter add dev "$IFB" protocol ip parent 2: prio 1 u32 \
     match ip src 0.0.0.0/0 flowid 2:1;
 
 fi;
+
+if [[ -n "$DSPEED" ]]; then
+  tc class $TCMODE dev "$IFB" parent 2: classid 2:1 htb rate "${DSPEED}kbit";
+
+fi;
+
 
 ### EOF
 ### vim:tw=80:et:sts=2:st=2:sw=2:com+=b\:###:fo+=cqtrw:tags=tags:
